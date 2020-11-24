@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import React, { createRef, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 const ImageWrapper = styled.div`
