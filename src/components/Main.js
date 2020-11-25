@@ -6,7 +6,10 @@ import SortFilters from "./SortFilters";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Axios from "axios";
 import { SearchContext } from "../contexts/SearchContext";
-const MainWrapper = styled.section``;
+import Loading from "./Loading";
+const MainWrapper = styled.section`
+  height: 100vh;
+`;
 const Header = styled.header`
   display: flex;
   align-items: center;
@@ -22,25 +25,26 @@ const Subreddit = styled.p`
 
 export default function Main() {
   const [items, setItems] = useState([]);
+  const [subreddit, setSubreddit] = useState("");
   const [next, setNext] = useState("");
   const { input, sort } = useContext(SearchContext);
+  //GET INITIAL DATA FUNCTION
+  const getItems = async () => {
+    const { data } = await Axios.get(
+      `https://www.reddit.com/r/${input ? input : "earthporn"}/${sort}.json`
+    );
 
-  console.log(sort);
+    const filtered = await data.data.children.filter((item) => {
+      return item.data.post_hint === "image";
+    });
+    setItems(filtered);
+
+    setNext(data.data.after);
+    setSubreddit(filtered[0].data.subreddit);
+  };
   useEffect(() => {
-    const getItems = async () => {
-      const { data } = await Axios.get(
-        `https://www.reddit.com/r/${
-          input ? input : "earthporn"
-        }/${sort}.json?limit=20`
-      );
-      const filtered = await data.data.children.filter((item) => {
-        return item.data.post_hint === "image";
-      });
-      setItems(filtered);
-
-      setNext(data.data.after);
-    };
     getItems();
+
     return () => {
       setItems([]);
       setNext("");
@@ -51,39 +55,36 @@ export default function Main() {
     const { data } = await Axios.get(
       `https://www.reddit.com/r/${
         input ? input : "earthporn"
-      }/${sort}.json?limit=10&after=${id}`
+      }/${sort}.json?after=${id}`
     );
     const filtered = await data.data.children.filter((item) => {
       return item.data.post_hint === "image";
     });
     setItems(items.concat(filtered));
     setNext(data.data.after);
-    console.log(data.data);
   };
   return (
-    <>
-      <MainWrapper>
-        <Header>
-          <Subreddit>r/placeholder</Subreddit>
-          <SortFilters />
-        </Header>
-
-        <InfiniteScroll
-          style={{ overflow: "hidden" }}
-          dataLength={items.length} //This is important field to render the next data
-          next={() => fetchData(next)}
-          hasMore={true}
-          loader={<h4>Loading...</h4>}
-          scrollThreshold={0.95}
-          endMessage={
-            <p style={{ textAlign: "center" }}>
-              <b>Yay! You have seen it all</b>
-            </p>
-          }
-        >
-          <Images images={items} />
-        </InfiniteScroll>
-      </MainWrapper>
-    </>
+    <MainWrapper>
+      <Header>
+        <Subreddit>r/{subreddit}</Subreddit>
+        <SortFilters />
+      </Header>
+      {/* <Loading /> */}
+      <InfiniteScroll
+        style={{ overflow: "hidden" }}
+        dataLength={items.length} //This is important field to render the next data
+        next={() => fetchData(next)}
+        hasMore={next === null ? false : true}
+        loader={<Loading />}
+        scrollThreshold={0.95}
+        endMessage={
+          <p style={{ textAlign: "center" }}>
+            <b>Yay! You have seen it all</b>
+          </p>
+        }
+      >
+        <Images images={items} />
+      </InfiniteScroll>
+    </MainWrapper>
   );
 }
