@@ -1,6 +1,7 @@
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { SearchContext } from "../contexts/SearchContext";
 const Filters = styled.ul`
   display: grid;
   grid-auto-flow: column;
@@ -23,15 +24,16 @@ const Filter = styled.li`
     `}
 `;
 export default function SortFilters() {
-  const [selected, setSelected] = useState(0);
-
+  const { setSort, sort } = useContext(SearchContext);
   const filters = ["hot", "top", "new", "rising"];
   const renderFilters = () => {
     return filters.map((filter, i) => (
       <Filter
         key={Math.random()}
-        selected={selected === i}
-        onClick={() => setSelected(i)}
+        selected={sort === filter}
+        onClick={() => {
+          setSort(filter);
+        }}
       >
         {filter}
       </Filter>

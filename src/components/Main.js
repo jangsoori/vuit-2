@@ -1,10 +1,11 @@
 import styled from "@emotion/styled";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Images from "./Images";
 import SortFilters from "./SortFilters";
 
 import InfiniteScroll from "react-infinite-scroll-component";
 import Axios from "axios";
+import { SearchContext } from "../contexts/SearchContext";
 const MainWrapper = styled.section``;
 const Header = styled.header`
   display: flex;
@@ -22,33 +23,43 @@ const Subreddit = styled.p`
 export default function Main() {
   const [items, setItems] = useState([]);
   const [next, setNext] = useState("");
+  const { input, sort } = useContext(SearchContext);
+
+  console.log(sort);
   useEffect(() => {
     const getItems = async () => {
       const { data } = await Axios.get(
-        `https://www.reddit.com/r/earthporn/hot.json?limit=10`
+        `https://www.reddit.com/r/${
+          input ? input : "earthporn"
+        }/${sort}.json?limit=20`
       );
       const filtered = await data.data.children.filter((item) => {
         return item.data.post_hint === "image";
       });
-      if (items.length === 0) {
-        setItems(filtered);
-      }
+      setItems(filtered);
+
       setNext(data.data.after);
     };
     getItems();
-  }, []);
+    return () => {
+      setItems([]);
+      setNext("");
+    };
+  }, [input, sort]);
 
   const fetchData = async (id) => {
     const { data } = await Axios.get(
-      `https://www.reddit.com/r/earthporn/hot.json?limit=10&after=${id}`
+      `https://www.reddit.com/r/${
+        input ? input : "earthporn"
+      }/${sort}.json?limit=10&after=${id}`
     );
     const filtered = await data.data.children.filter((item) => {
       return item.data.post_hint === "image";
     });
     setItems(items.concat(filtered));
     setNext(data.data.after);
+    console.log(data.data);
   };
-  console.log(items);
   return (
     <>
       <MainWrapper>
@@ -63,6 +74,7 @@ export default function Main() {
           next={() => fetchData(next)}
           hasMore={true}
           loader={<h4>Loading...</h4>}
+          scrollThreshold={0.95}
           endMessage={
             <p style={{ textAlign: "center" }}>
               <b>Yay! You have seen it all</b>

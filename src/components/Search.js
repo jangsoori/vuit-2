@@ -40,7 +40,7 @@ const Input = styled.input`
   font-size: 2rem;
 `;
 export default function Search() {
-  const { input, setInput } = useContext(SearchContext);
+  const { input, setInput, setSort } = useContext(SearchContext);
   const [query, setQuery] = useState("");
 
   return (
@@ -49,6 +49,7 @@ export default function Search() {
         onSubmit={(e) => {
           e.preventDefault();
           setInput(query);
+          setSort("hot");
         }}
       >
         <Label>r/</Label>
