@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 import React, { useEffect, useRef, useState } from "react";
 import dayjs from "dayjs";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 import relativeTime from "dayjs/plugin/relativeTime";
 const ImageWrapper = styled.div`
   position: relative;
