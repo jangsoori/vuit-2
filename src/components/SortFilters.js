@@ -1,13 +1,24 @@
 import { css } from "@emotion/react";
 import styled from "@emotion/styled";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { SearchContext } from "../contexts/SearchContext";
-const Filters = styled.ul`
+const Filters = styled.section`
   display: grid;
   grid-auto-flow: column;
   gap: 1rem;
   align-items: center;
 `;
+const Sort = styled.ul`
+  display: grid;
+  grid-auto-flow: column;
+  gap: 1rem;
+  align-items: center;
+`;
+const SortText = styled.p`
+  color: white;
+  font-size: 1.6rem;
+`;
+const Period = styled.select``;
 const Filter = styled.li`
   padding: 0.25rem 0.5rem;
   background: #888;
@@ -24,8 +35,13 @@ const Filter = styled.li`
     `}
 `;
 export default function SortFilters() {
-  const { setSort, sort } = useContext(SearchContext);
-  const filters = ["hot", "top", "new", "rising"];
+  const { setSort, sort, periodForTop, setPeriodForTop } = useContext(
+    SearchContext
+  );
+  const [period, setPeriod] = useState("week");
+  const filters = ["hot", "top", "new", "rising", "controversial"];
+  console.log(period);
+  console.log(periodForTop);
   const renderFilters = () => {
     return filters.map((filter, i) => (
       <Filter
@@ -39,5 +55,28 @@ export default function SortFilters() {
       </Filter>
     ));
   };
-  return <Filters>{renderFilters()}</Filters>;
+  useEffect(() => {
+    setPeriodForTop(period);
+    return () => {
+      setPeriodForTop("week");
+    };
+  }, [period]);
+  return (
+    <Filters>
+      <Sort>{renderFilters()}</Sort>
+      {sort === "top" && (
+        <>
+          <SortText>Sort by</SortText>
+          <Period onChange={(e) => setPeriod(e.target.value)} value={period}>
+            <option value="hour">hour</option>
+            <option value="day">day</option>
+            <option value="week">week</option>
+            <option value="month">month</option>
+            <option value="year">year</option>
+            <option value="all">all</option>
+          </Period>
+        </>
+      )}
+    </Filters>
+  );
 }

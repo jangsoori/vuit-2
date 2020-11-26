@@ -27,18 +27,19 @@ export default function Main() {
   const [items, setItems] = useState([]);
   const [subreddit, setSubreddit] = useState("");
   const [next, setNext] = useState("");
-  const { input, sort } = useContext(SearchContext);
+  const { input, sort, periodForTop } = useContext(SearchContext);
   //GET INITIAL DATA FUNCTION
   const getItems = async () => {
     const { data } = await Axios.get(
-      `https://www.reddit.com/r/${input ? input : "earthporn"}/${sort}.json`
+      `https://www.reddit.com/r/${input ? input : "earthporn"}/${sort}.json?${
+        sort === "top" ? `t=${periodForTop}` : ""
+      }`
     );
 
     setItems(data.data.children);
     setNext(data.data.after);
     setSubreddit(data.data.children[0].data.subreddit);
   };
-  console.log(items);
   useEffect(() => {
     getItems();
 
@@ -46,7 +47,7 @@ export default function Main() {
       setItems([]);
       setNext("");
     };
-  }, [input, sort]);
+  }, [input, sort, periodForTop]);
 
   const fetchData = async (id) => {
     const { data } = await Axios.get(
