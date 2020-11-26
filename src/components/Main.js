@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import React, { useContext, useEffect, useState } from "react";
-import Images from "./Images";
+import Posts from "./Posts";
 import SortFilters from "./SortFilters";
 
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -34,14 +34,11 @@ export default function Main() {
       `https://www.reddit.com/r/${input ? input : "earthporn"}/${sort}.json`
     );
 
-    const filtered = await data.data.children.filter((item) => {
-      return item.data.post_hint === "image";
-    });
-    setItems(filtered);
-
+    setItems(data.data.children);
     setNext(data.data.after);
-    setSubreddit(filtered[0].data.subreddit);
+    setSubreddit(data.data.children[0].data.subreddit);
   };
+  console.log(items);
   useEffect(() => {
     getItems();
 
@@ -83,7 +80,7 @@ export default function Main() {
           </p>
         }
       >
-        <Images images={items} />
+        <Posts posts={items} />
       </InfiniteScroll>
     </MainWrapper>
   );
