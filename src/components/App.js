@@ -8,7 +8,13 @@ const AppWrapper = styled.main`
   flex-direction: column;
   padding: 2rem;
 `;
-const queryCache = new QueryCache();
+const queryCache = new QueryCache({
+  defaultConfig: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 export default function App() {
   return (

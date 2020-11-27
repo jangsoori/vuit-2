@@ -8,11 +8,18 @@ const Grid = styled.section`
   gap: 0 10px;
   justify-items: flex-start;
 `;
-export default function Posts({ posts }) {
-  const renderPosts = () =>
-    posts?.map((img, i) => {
-      return <Post key={img.data.id} i={i} post={img.data} />;
+export default function Posts({ data }) {
+  const renderPosts = () => {
+    return data?.map((page, i) => {
+      return (
+        <React.Fragment key={i}>
+          {page?.data.data.children.map((post) => {
+            return <Post key={post.data.id} post={post.data} />;
+          })}
+        </React.Fragment>
+      );
     });
+  };
 
   return <Grid>{renderPosts()}</Grid>;
 }
