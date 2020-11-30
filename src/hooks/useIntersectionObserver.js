@@ -4,8 +4,8 @@ export default function useIntersectionObserver({
   root,
   target,
   onIntersect,
-  threshold = 0.5,
-  rootMargin = "0px",
+  threshold = 0.9,
+  rootMargin = "100px",
   enabled = true,
 }) {
   React.useEffect(() => {

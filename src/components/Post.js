@@ -6,7 +6,8 @@ const PostWrapper = styled.div`
   /* position: relative; */
   display: flex;
   flex-direction: column;
-  width: 400px;
+  /* width: 400px; */
+  height: 100%;
 `;
 const ImageWrapper = styled.div`
   position: relative;
@@ -63,6 +64,7 @@ const Details = styled.section`
 const Detail = styled.p``;
 export default function Post({ post, i }) {
   const [spans, setSpans] = useState("");
+  const [loaded, setLoaded] = useState(false);
   const imageRef = useRef();
   const metaRef = useRef();
   //Check if Post has Image
@@ -111,39 +113,58 @@ export default function Post({ post, i }) {
   //Fix formatting of url
   const fixUrl = (url) => url.replaceAll("&amp;", "&");
   return (
-    <PostWrapper className={i} style={{ gridRowEnd: `span ${spans}` }}>
-      {/* If there is image, render it. If not, ignore. */}
-      {hasImage() && (
-        <ImageWrapper>
-          <a
-            href={`https://www.reddit.com${permalink}`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            <Image ref={imageRef} src={fixUrl(url())} alt="dsa" />
-          </a>
-          <a href={post.url} target="_blank" rel="noreferrer">
-            <LinkExternalImage className="fas fa-external-link-alt fa-2x"></LinkExternalImage>
-          </a>
-        </ImageWrapper>
-      )}
-
-      <Meta ref={metaRef}>
-        <Title>{post?.title}</Title>
-        <Details>
-          <Detail>created {createdAgo}</Detail>
-
-          <Detail>
+    <>
+      <PostWrapper
+        className={i}
+        style={
+          (loaded && hasImage()) || !hasImage()
+            ? { gridRowEnd: `span ${spans}` }
+            : { display: "none" }
+        }
+      >
+        {/* If there is image, render it. If not, ignore. */}
+        {hasImage() && (
+          <ImageWrapper>
             <a
-              href={`https://www.reddit.com/u/${author}`}
+              href={`https://www.reddit.com${permalink}`}
               target="_blank"
               rel="noreferrer"
             >
-              u/{author}
+              <Image
+                onLoad={() => {
+                  setLoaded(true);
+                }}
+                onChange={(e) => {
+                  console.log(e);
+                }}
+                ref={imageRef}
+                src={fixUrl(url())}
+                alt="dsa"
+              />
             </a>
-          </Detail>
-        </Details>
-      </Meta>
-    </PostWrapper>
+            <a href={post.url} target="_blank" rel="noreferrer">
+              <LinkExternalImage className="fas fa-external-link-alt fa-2x"></LinkExternalImage>
+            </a>
+          </ImageWrapper>
+        )}
+
+        <Meta ref={metaRef}>
+          <Title>{post?.title}</Title>
+          <Details>
+            <Detail>created {createdAgo}</Detail>
+
+            <Detail>
+              <a
+                href={`https://www.reddit.com/u/${author}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                u/{author}
+              </a>
+            </Detail>
+          </Details>
+        </Meta>
+      </PostWrapper>
+    </>
   );
 }

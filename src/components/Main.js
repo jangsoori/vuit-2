@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import React, { useContext, useEffect, useState } from "react";
+import React, { Suspense, useContext, useEffect, useState } from "react";
 import Posts from "./Posts";
 import useIntersectionObserver from "../hooks/useIntersectionObserver";
 
@@ -14,6 +14,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import Axios from "axios";
 import { SearchContext } from "../contexts/SearchContext";
 import Loading from "./Loading";
+
 const MainWrapper = styled.section`
   /* height: 200vh; */
 `;
@@ -67,7 +68,6 @@ export default function Main() {
     }
   );
 
-  console.log(data);
   const loadMoreButtonRef = React.useRef();
   useIntersectionObserver({
     target: loadMoreButtonRef,
